@@ -60,34 +60,57 @@ function createServiceCommand(service: ServiceType) {
 
           // Interactive cherry-pick if no scope specified
           if (scopes.length === 0) {
-            const selected = await p.multiselect({
-              message: `Where do you want to install ${chalk.bold(name)}?`,
-              options: [
-                { value: "local", label: "Local project (.opencode/)", hint: "Recommended" },
-                { value: "global", label: "Global (~/.config/opencode/)", hint: "Available everywhere" },
-              ],
-              required: true,
-            });
+            while (true) {
+              const selected = await p.multiselect({
+                message: `Where do you want to install ${chalk.bold(name)}?`,
+                options: [
+                  { value: "local", label: "Local project (.opencode/)", hint: "Recommended" },
+                  { value: "global", label: "Global (~/.config/opencode/)", hint: "Available everywhere" },
+                ],
+                required: true,
+              });
 
-            if (p.isCancel(selected)) {
-              p.cancel("Installation cancelled.");
-              process.exit(0);
+              if (p.isCancel(selected)) {
+                p.cancel("Installation cancelled.");
+                process.exit(0);
+              }
+              
+              const currentScopes = selected as ("global" | "local")[];
+
+              // Warning if both are selected
+              if (currentScopes.includes("global") && currentScopes.includes("local")) {
+                console.log(chalk.yellow(`\n⚠️  Warning: Installing to both global and local is usually unnecessary.`));
+                console.log(chalk.gray(`Better to choose one to avoid version conflicts.\n`));
+                
+                const shouldContinue = await p.confirm({
+                  message: "Are you sure you want to continue with both?",
+                  initialValue: false,
+                });
+
+                if (p.isCancel(shouldContinue)) {
+                  p.cancel("Installation cancelled.");
+                  process.exit(0);
+                }
+
+                if (!shouldContinue) {
+                  // User said no, loop back to selection
+                  console.clear();
+                  continue;
+                }
+              }
+
+              scopes = currentScopes;
+              break;
             }
-            scopes = selected as ("global" | "local")[];
-          }
-
-          // Warning if both are selected
-          if (scopes.includes("global") && scopes.includes("local")) {
-            console.log(chalk.yellow(`\n⚠️  Warning: Installing to both global and local is usually unnecessary.`));
-            console.log(chalk.gray(`Better to choose one to avoid version conflicts.\n`));
-            
+          } else if (scopes.includes("global") && scopes.includes("local")) {
+            // Even with flags, if both provided, show confirmation
+            console.log(chalk.yellow(`\n⚠️  Warning: Both --global and --local flags provided.`));
             const shouldContinue = await p.confirm({
-              message: "Are you sure you want to continue with both?",
+              message: "Are you sure you want to install to both?",
               initialValue: false,
             });
-
-            if (p.isCancel(shouldContinue) || !shouldContinue) {
-              p.cancel("Installation cancelled. Please try again and select a single scope.");
+            if (!shouldContinue) {
+              p.cancel("Installation cancelled.");
               process.exit(0);
             }
           }
