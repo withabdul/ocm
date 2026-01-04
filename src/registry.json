@@ -2,7 +2,11 @@
   "agent": {
     "openagent": {
       "repo": "withabdul/ocm",
-      "path": "assets/agent/openagent"
+      "path": "assets/agent/core/openagent.md"
+    },
+    "opencoder": {
+      "repo": "withabdul/ocm",
+      "path": "assets/agent/core/opencoder.md"
     }
   },
   "command": {
