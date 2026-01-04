@@ -80,6 +80,16 @@ function createServiceCommand(service: ServiceType) {
           if (scopes.includes("global") && scopes.includes("local")) {
             console.log(chalk.yellow(`\n⚠️  Warning: Installing to both global and local is usually unnecessary.`));
             console.log(chalk.gray(`Better to choose one to avoid version conflicts.\n`));
+            
+            const shouldContinue = await p.confirm({
+              message: "Are you sure you want to continue with both?",
+              initialValue: false,
+            });
+
+            if (p.isCancel(shouldContinue) || !shouldContinue) {
+              p.cancel("Installation cancelled. Please try again and select a single scope.");
+              process.exit(0);
+            }
           }
 
           // Execute for each scope
