@@ -1,17 +1,11 @@
 import path from "node:path";
 import os from "node:os";
+import fs from "node:fs";
 
 /**
  * OpenCode Manager Constants
  * Handles path resolution for different environments.
  */
-
-// Automatic Production Detection:
-// We consider it "Local Dev" ONLY if:
-// 1. We are inside a directory named "ocm" AND
-// 2. There is a "src" folder and "package.json" in the current working directory
-// Otherwise, it's production (user is running the tool).
-import fs from "node:fs";
 
 function detectIsProd() {
   // If explicitly set via ENV, respect it
@@ -19,10 +13,6 @@ function detectIsProd() {
   if (process.env.OCM_ENV === "development") return false;
 
   const cwd = process.cwd().toLowerCase();
-  
-  // Debug
-  // console.log(`CWD: ${cwd}`);
-
   const isOcmFolder = path.basename(cwd) === "ocm";
   const hasSrc = fs.existsSync(path.join(cwd, "src"));
   const hasPackageJson = fs.existsSync(path.join(cwd, "package.json"));
@@ -33,7 +23,6 @@ function detectIsProd() {
 }
 
 const isProd = detectIsProd();
-
 
 // Get paths based on scope
 export function getPathsForScope(scope: "global" | "local") {
@@ -56,12 +45,11 @@ export function getPathsForScope(scope: "global" | "local") {
     base,
     config: path.join(base, "opencode.json"),
     skill: path.join(base, "skill"),
-    agents: path.join(base, "agents"),
+    agent: path.join(base, "agent"),
     command: path.join(base, "command"),
     mcp: path.join(base, "mcp"),
   };
 }
-
 
 // Default export PATHS using current env for backward compatibility
 const currentScope = process.env.OCM_GLOBAL === "true" ? "global" : "local";
@@ -73,4 +61,4 @@ export const CONFIG_SCHEMA = "https://opencode.ai/config.json";
 export const GITHUB_REPO = "withabdul/ocm"; // Default repository source
 export const GITHUB_API_BASE = "https://api.github.com/repos";
 
-export type ServiceType = "skill" | "agents" | "command" | "mcp";
+export type ServiceType = "skill" | "agent" | "command" | "mcp";

@@ -1,8 +1,8 @@
 {
-  "agents": {
+  "agent": {
     "openagent": {
       "repo": "withabdul/ocm",
-      "path": "assets/agents/openagent"
+      "path": "assets/agent/openagent"
     }
   },
   "command": {

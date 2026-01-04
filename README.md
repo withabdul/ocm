@@ -25,7 +25,7 @@ Manage your assets interactively:
 ocm skill install frontend-design
 
 # List all installed agents
-ocm agents list
+ocm agent list
 
 # Toggle an MCP server
 ocm mcp enable firecrawl
@@ -49,7 +49,7 @@ ocm mcp enable firecrawl
 | Command | Description |
 | :--- | :--- |
 | `ocm skill <action>` | Manage reusable behavior definitions |
-| `ocm agents <action>` | Manage autonomous agent definitions |
+| `ocm agent <action>` | Manage autonomous agent definitions |
 | `ocm command <action>` | Manage custom CLI tool instructions |
 | `ocm mcp <action>` | Orchestrate Model Context Protocol servers |
 

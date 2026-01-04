@@ -310,9 +310,10 @@ function createServiceCommand(service: ServiceType) {
 
 // Register all services
 createServiceCommand("skill");
-createServiceCommand("agents");
+createServiceCommand("agent");
 createServiceCommand("command");
 createServiceCommand("mcp");
+
 
 // Show help if no arguments provided
 if (!process.argv.slice(2).length) {

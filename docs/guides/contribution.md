@@ -11,7 +11,7 @@ assets/
 ├── skill/
 │   └── <name>/
 │       └── SKILL.md
-├── agents/
+├── agent/
 │   └── <name>/
 │       └── AGENT.md
 └── command/

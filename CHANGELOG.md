@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **Core Orchestrator**: Initial release of `ocm` CLI.
-- **Service Support**: Full management for `skill`, `agents`, `command`, and `mcp`.
+- **Service Support**: Full management for `skill`, `agent`, `command`, and `mcp`.
 - **Global/Local Scopes**: Ability to install and manage assets in `~/.config/opencode` or `.opencode`.
 - **Interactive UI**: Added `@clack/prompts` for cherry-picking installation scopes and asset removal.
 - **Asset Registry**: Built-in mapping for popular OpenCode assets.
