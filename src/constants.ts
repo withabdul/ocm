@@ -18,13 +18,18 @@ function detectIsProd() {
   if (process.env.OCM_ENV === "production") return true;
   if (process.env.OCM_ENV === "development") return false;
 
-  const cwd = process.cwd();
-  const isOcmFolder = path.basename(cwd).toLowerCase() === "ocm";
+  const cwd = process.cwd().toLowerCase();
+  
+  // Debug
+  // console.log(`CWD: ${cwd}`);
+
+  const isOcmFolder = path.basename(cwd) === "ocm";
   const hasSrc = fs.existsSync(path.join(cwd, "src"));
   const hasPackageJson = fs.existsSync(path.join(cwd, "package.json"));
 
   // If it looks like the dev repo, it's NOT production
-  return !(isOcmFolder && hasSrc && hasPackageJson);
+  const isDev = isOcmFolder && hasSrc && hasPackageJson;
+  return !isDev;
 }
 
 const isProd = detectIsProd();
