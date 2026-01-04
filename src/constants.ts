@@ -6,7 +6,8 @@ import os from "node:os";
  * Handles path resolution for different environments.
  */
 
-const isProd = process.env.OCM_ENV === "production";
+// Default to production unless explicitly in our dev folder
+const isProd = process.env.OCM_ENV === "production" || !process.cwd().toLowerCase().includes("programming\\pribadi\\ocm");
 
 // Get paths based on scope
 export function getPathsForScope(scope: "global" | "local") {

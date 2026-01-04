@@ -143,12 +143,44 @@ function createServiceCommand(service: ServiceType) {
       }
     });
 
-  serviceCmd
-    .command("remove <names...>")
-    .description(`Remove ${service} assets (supports cherry-pick)`)
+    serviceCmd
+      .command("remove [names...]") // Made names optional for cherry-pick
+      .description(`Remove ${service} assets (supports cherry-pick)`)
       .action(async (names) => {
         try {
-          await handler.remove(names);
+          const opts = program.opts();
+          const scope = opts.global ? "global" : "local";
+          const paths = getPathsForScope(scope);
+          
+          if (handler instanceof GenericService) {
+            handler.setPaths(paths);
+          }
+
+          let namesToRemove = names;
+
+          // Interactive cherry-pick if no names provided
+          if (!namesToRemove || namesToRemove.length === 0) {
+            const installed = await handler.getInstalledItems();
+            
+            if (installed.length === 0) {
+              console.log(chalk.yellow(`No ${service} installed in ${scope} scope to remove.`));
+              return;
+            }
+
+            const selected = await p.multiselect({
+              message: `Select ${service} to remove (Space to select, Enter to confirm):`,
+              options: installed.map(item => ({ value: item, label: item })),
+              required: true,
+            });
+
+            if (p.isCancel(selected)) {
+              p.cancel("Operation cancelled.");
+              process.exit(0);
+            }
+            namesToRemove = selected as string[];
+          }
+
+          await handler.remove(namesToRemove);
         } catch (error: any) {
           console.error(chalk.red(`Error: ${error.message}`));
           process.exit(1);

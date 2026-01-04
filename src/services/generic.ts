@@ -50,6 +50,16 @@ export class GenericService {
     }
   }
 
+  async getInstalledItems(): Promise<string[]> {
+    const baseDir = this.currentPaths[this.type];
+    try {
+      const items = await fs.readdir(baseDir);
+      return items.filter(i => i !== ".gitkeep" && !i.startsWith("."));
+    } catch (error) {
+      return [];
+    }
+  }
+
   async list() {
     const baseDir = this.currentPaths[this.type];
     try {
