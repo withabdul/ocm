@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2026-01-05
+
+### Added
+- Official MIT License.
+
+### Fixed
+- Improved consistency between NPM package and GitHub repository.
+
 ## [1.0.0] - 2026-01-05
 
 ### Added
