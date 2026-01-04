@@ -20,7 +20,14 @@ program
       if (str.includes("missing required argument")) {
         const argName = str.match(/'([^']+)'/)?.[1] || "argument";
         process.stdout.write(chalk.red(`Error: Missing required argument `) + chalk.bold(argName) + "\n");
-        process.stdout.write(chalk.gray(`Usage: ocm <service> <action> <name>\n`));
+        
+        // Find the command that caused the error to show specific help
+        const args = process.argv.slice(2);
+        if (args.length >= 2) {
+          process.stdout.write(chalk.gray(`Usage: ocm ${args[0]} ${args[1]} <name>\n`));
+        } else {
+          process.stdout.write(chalk.gray(`Usage: ocm <service> <action> <name>\n`));
+        }
       } else {
         process.stdout.write(chalk.red(str));
       }
