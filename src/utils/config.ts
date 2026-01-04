@@ -7,20 +7,32 @@ export interface OpenCodeConfig {
   [key: string]: any;
 }
 
+import fsSync from "node:fs";
+
+/**
+ * Reads the opencode.json config file.
+ * Returns null if file doesn't exist, to distinguish from empty config.
+ */
+export async function readConfigRaw(configPath: string): Promise<OpenCodeConfig | null> {
+  try {
+    if (!fsSync.existsSync(configPath)) return null;
+    const content = await fs.readFile(configPath, "utf-8");
+    return JSON.parse(content);
+  } catch (error) {
+    return null;
+  }
+}
+
 /**
  * Reads the opencode.json config file.
  * Returns a default config if the file doesn't exist.
  */
 export async function readConfig(configPath: string = PATHS.config): Promise<OpenCodeConfig> {
-  try {
-    const content = await fs.readFile(configPath, "utf-8");
-    return JSON.parse(content);
-  } catch (error) {
-    return {
-      $schema: CONFIG_SCHEMA,
-      mcp: {}
-    };
-  }
+  const config = await readConfigRaw(configPath);
+  return config || {
+    $schema: CONFIG_SCHEMA,
+    mcp: {}
+  };
 }
 
 /**

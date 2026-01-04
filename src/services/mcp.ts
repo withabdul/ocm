@@ -1,5 +1,5 @@
 import { GenericService } from "./generic";
-import { readConfig, updateMcpConfig } from "../utils/config";
+import { readConfig, readConfigRaw, updateMcpConfig } from "../utils/config";
 import chalk from "chalk";
 import { PATHS } from "../constants";
 
@@ -41,7 +41,8 @@ export class McpService extends GenericService {
 
   async hasMcpConfig(): Promise<boolean> {
     try {
-      const config = await readConfig(this.mcpPaths.config);
+      const config = await readConfigRaw(this.mcpPaths.config);
+      if (!config) return false;
       return Object.keys(config.mcp || {}).length > 0;
     } catch {
       return false;
