@@ -1,7 +1,15 @@
 {
   "name": "@withabdul/ocm",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
+  "keywords": [
+    "opencode",
+    "mcp",
+    "agent",
+    "cli",
+    "orchestrator",
+    "ai"
+  ],
   "module": "src/index.ts",
   "type": "module",
   "bin": {
@@ -10,6 +18,13 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "assets"
+  ],
   "scripts": {
     "build": "bun build ./src/index.ts --compile --outfile ocm"
   },
