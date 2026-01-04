@@ -121,9 +121,27 @@ function createServiceCommand(service: ServiceType) {
             const paths = getPathsForScope(scope);
             if (handler instanceof GenericService) {
               handler.setPaths(paths);
+              
+              const alreadyExists = await handler.exists(name);
+              if (alreadyExists) {
+                const overwrite = await p.confirm({
+                  message: `${chalk.bold(name)} is already installed in ${scope}. Overwrite?`,
+                  initialValue: false,
+                });
+
+                if (p.isCancel(overwrite) || !overwrite) {
+                  console.log(chalk.yellow(`  Skipping ${scope} installation.`));
+                  continue;
+                }
+                
+                // If overwrite, we can either let downloadFromGitHub handle it or remove first
+                // Removing first ensures a clean install if files were removed from source
+                await handler.remove([name]);
+              }
             }
             await handler.install(name);
           }
+
         } catch (error: any) {
           console.error(chalk.red(`Error: ${error.message}`));
           process.exit(1);

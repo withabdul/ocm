@@ -25,7 +25,18 @@ export class GenericService {
     return path.join(this.currentPaths[this.type], name);
   }
 
+  async exists(name: string): Promise<boolean> {
+    const dir = this.getTargetDir(name);
+    try {
+      await fs.access(dir);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async install(name: string) {
+
     console.log(chalk.blue(`Installing ${this.type}: `) + chalk.bold(name) + "...");
     
     let repoSource = GITHUB_REPO;
