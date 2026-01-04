@@ -11,6 +11,12 @@ program
   .name("ocm")
   .description(chalk.cyan("OpenCode Manager (ocm) - Standalone orchestrator for OpenCode"))
   .version("1.0.0")
+  .option("-g, --global", "Manage global assets in ~/.config/opencode")
+  .hook("preAction", (thisCommand) => {
+    if (thisCommand.opts().global) {
+      process.env.OCM_GLOBAL = "true";
+    }
+  })
   .configureOutput({
     // Custom output for missing arguments or other command errors
     writeErr: (str) => {

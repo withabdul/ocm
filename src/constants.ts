@@ -1,25 +1,30 @@
 import path from "node:path";
+import os from "node:os";
 
 /**
  * OpenCode Manager Constants
  * Handles path resolution for different environments.
  */
 
-// Default to development mode to protect the root .opencode directory
 const isProd = process.env.OCM_ENV === "production";
+const isGlobal = process.env.OCM_GLOBAL === "true";
 
-export const BASE_DIR = isProd ? ".opencode" : path.join("tests", ".opencode");
+// Helper to get base directory
+function getBaseDir() {
+  if (!isProd) return path.join(process.cwd(), "tests", ".opencode");
+  if (isGlobal) return path.join(os.homedir(), ".config", "opencode");
+  return path.join(process.cwd(), ".opencode");
+}
+
+export const BASE_DIR = getBaseDir();
 
 export const PATHS = {
-  base: path.join(process.cwd(), BASE_DIR),
-  // opencode.json is at root in prod, but inside tests/.opencode in dev
-  config: isProd 
-    ? path.join(process.cwd(), "opencode.json") 
-    : path.join(process.cwd(), BASE_DIR, "opencode.json"),
-  skill: path.join(process.cwd(), BASE_DIR, "skill"),
-  agents: path.join(process.cwd(), BASE_DIR, "agents"),
-  command: path.join(process.cwd(), BASE_DIR, "command"),
-  mcp: path.join(process.cwd(), BASE_DIR, "mcp"),
+  base: BASE_DIR,
+  config: path.join(BASE_DIR, "opencode.json"),
+  skill: path.join(BASE_DIR, "skill"),
+  agents: path.join(BASE_DIR, "agents"),
+  command: path.join(BASE_DIR, "command"),
+  mcp: path.join(BASE_DIR, "mcp"),
 };
 
 export const CONFIG_SCHEMA = "https://opencode.ai/config.json";

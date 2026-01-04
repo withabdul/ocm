@@ -1,0 +1,20 @@
+{
+  "agents": {
+    "openagent": {
+      "repo": "withabdul/ocm",
+      "path": "assets/agents/openagent"
+    }
+  },
+  "command": {
+    "commit": {
+      "repo": "withabdul/ocm",
+      "path": "assets/command/commit"
+    }
+  },
+  "skill": {
+    "frontend-design": {
+      "repo": "withabdul/ocm",
+      "path": "assets/skill/frontend-design"
+    }
+  }
+}
