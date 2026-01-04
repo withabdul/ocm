@@ -38,14 +38,18 @@ const isProd = detectIsProd();
 // Get paths based on scope
 export function getPathsForScope(scope: "global" | "local") {
   const isGlobal = scope === "global";
+  const isProd = detectIsProd();
   
   let base: string;
-  if (!isProd) {
-    base = path.join(process.cwd(), "tests", ".opencode");
-  } else if (isGlobal) {
-    base = path.join(os.homedir(), ".config", "opencode");
+  if (isProd) {
+    base = isGlobal 
+      ? path.join(os.homedir(), ".config", "opencode")
+      : path.join(process.cwd(), ".opencode");
   } else {
-    base = path.join(process.cwd(), ".opencode");
+    // Test environment - keep everything local to the repo
+    base = isGlobal
+      ? path.join(process.cwd(), "tests", ".opencode-global")
+      : path.join(process.cwd(), "tests", ".opencode");
   }
 
   return {
@@ -57,6 +61,7 @@ export function getPathsForScope(scope: "global" | "local") {
     mcp: path.join(base, "mcp"),
   };
 }
+
 
 // Default export PATHS using current env for backward compatibility
 const currentScope = process.env.OCM_GLOBAL === "true" ? "global" : "local";

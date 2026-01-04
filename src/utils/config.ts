@@ -1,13 +1,8 @@
 import { PATHS, CONFIG_SCHEMA } from "../constants";
 import fs from "node:fs/promises";
-
-export interface OpenCodeConfig {
-  $schema?: string;
-  mcp?: Record<string, any>;
-  [key: string]: any;
-}
-
 import fsSync from "node:fs";
+import chalk from "chalk";
+
 
 /**
  * Reads the opencode.json config file.
@@ -18,7 +13,10 @@ export async function readConfigRaw(configPath: string): Promise<OpenCodeConfig 
     if (!fsSync.existsSync(configPath)) return null;
     const content = await fs.readFile(configPath, "utf-8");
     return JSON.parse(content);
-  } catch (error) {
+  } catch (error: any) {
+    console.warn(chalk.yellow(`\n⚠️  Warning: Failed to parse config at ${configPath}`));
+    console.warn(chalk.gray(`Error: ${error.message}`));
+    console.warn(chalk.gray(`Please check for syntax errors like trailing commas.\n`));
     return null;
   }
 }

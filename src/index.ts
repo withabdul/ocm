@@ -187,8 +187,12 @@ function createServiceCommand(service: ServiceType) {
           if (handler instanceof GenericService) handler.setPaths(globalPaths);
           
           let globalHasItems = false;
-          if (service === "mcp" && handler instanceof McpService) {
-            globalHasItems = await handler.hasMcpConfig();
+          if (service === "mcp") {
+            globalHasItems = await (handler as McpService).hasMcpConfig();
+            if (!globalHasItems) {
+               // DEBUG
+               // console.log(`No MCP config found at ${globalPaths.config}`);
+            }
           } else if (handler instanceof GenericService) {
             const items = await handler.getInstalledItems();
             globalHasItems = items.length > 0;

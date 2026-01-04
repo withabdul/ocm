@@ -8,11 +8,12 @@ import registryData from "../registry.json";
 const registry = registryData as Record<string, Record<string, { repo: string; path: string }>>;
 
 export class GenericService {
-  private currentPaths: typeof PATHS;
+  protected currentPaths: typeof PATHS;
 
   constructor(private type: ServiceType) {
     this.currentPaths = PATHS;
   }
+
 
   /**
    * Update the paths used by this service (for multi-scope support)
