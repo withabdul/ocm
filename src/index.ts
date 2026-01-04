@@ -136,12 +136,45 @@ function createServiceCommand(service: ServiceType) {
     .description(`List all installed ${service}`)
     .action(async () => {
       try {
-        await handler.list();
+        const opts = program.opts();
+        
+        // If specific scope is requested via flag
+        if (opts.global || opts.local) {
+          const scope = opts.global ? "global" : "local";
+          const paths = getPathsForScope(scope);
+          if (handler instanceof GenericService) handler.setPaths(paths);
+          console.log(chalk.gray(`Scope: ${chalk.bold(scope)}`));
+          await handler.list();
+          return;
+        }
+
+        // Default behavior: Check Local, if empty/not found, check Global
+        const localPaths = getPathsForScope("local");
+        if (handler instanceof GenericService) handler.setPaths(localPaths);
+        const localItems = await handler.getInstalledItems();
+
+        if (localItems.length > 0) {
+          console.log(chalk.gray(`Scope: ${chalk.bold("local")}`));
+          await handler.list();
+        } else {
+          // Fallback to Global
+          const globalPaths = getPathsForScope("global");
+          if (handler instanceof GenericService) handler.setPaths(globalPaths);
+          const globalItems = await handler.getInstalledItems();
+          
+          if (globalItems.length > 0) {
+            console.log(chalk.gray(`Scope: ${chalk.bold("global")} (fallback)`));
+            await handler.list();
+          } else {
+            console.log(chalk.yellow(`No ${service} installed in local or global scope.`));
+          }
+        }
       } catch (error: any) {
         console.error(chalk.red(`Error: ${error.message}`));
         process.exit(1);
       }
     });
+
 
     serviceCmd
       .command("remove [names...]") // Made names optional for cherry-pick
