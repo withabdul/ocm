@@ -93,8 +93,8 @@ function createServiceCommand(service: ServiceType) {
                 }
 
                 if (!shouldContinue) {
-                  // User said no, loop back to selection
-                  console.clear();
+                  // User said no, loop back to selection without clearing screen
+                  console.log(chalk.gray("Let's pick again...\n"));
                   continue;
                 }
               }
