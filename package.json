@@ -1,6 +1,7 @@
 {
   "name": "@withabdul/ocm",
   "version": "1.0.0",
+  "license": "MIT",
   "module": "src/index.ts",
   "type": "module",
   "bin": {
