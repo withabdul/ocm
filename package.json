@@ -1,10 +1,13 @@
 {
-  "name": "ocm",
+  "name": "@withabdul/ocm",
+  "version": "1.0.0",
   "module": "src/index.ts",
   "type": "module",
-  "private": true,
   "bin": {
     "ocm": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "bun build ./src/index.ts --compile --outfile ocm"
