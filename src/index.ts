@@ -31,6 +31,11 @@ function createServiceCommand(service: ServiceType) {
   const serviceCmd = program.command(service).description(`Manage ${service} assets`);
   const handler = service === "mcp" ? new McpService() : new GenericService(service);
 
+  // Fallback to help if no subcommand is provided for the service
+  serviceCmd.action(() => {
+    serviceCmd.outputHelp();
+  });
+
   if (service !== "mcp") {
     serviceCmd
       .command("install <name>")
