@@ -1,6 +1,7 @@
 import { GenericService } from "./generic";
 import { readConfig, updateMcpConfig } from "../utils/config";
 import chalk from "chalk";
+import { PATHS } from "../constants";
 
 export class McpService extends GenericService {
   private mcpPaths: typeof PATHS;
