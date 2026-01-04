@@ -1,9 +1,10 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
 import chalk from "chalk";
-import { type ServiceType } from "./constants";
+import { type ServiceType, getPathsForScope } from "./constants";
 import { GenericService } from "./services/generic";
 import { McpService } from "./services/mcp";
+import * as p from "@clack/prompts";
 
 const program = new Command();
 
@@ -12,11 +13,7 @@ program
   .description(chalk.cyan("OpenCode Manager (ocm) - Standalone orchestrator for OpenCode"))
   .version("1.0.0")
   .option("-g, --global", "Manage global assets in ~/.config/opencode")
-  .hook("preAction", (thisCommand) => {
-    if (thisCommand.opts().global) {
-      process.env.OCM_GLOBAL = "true";
-    }
-  })
+  .option("-l, --local", "Manage local assets in .opencode (default)")
   .configureOutput({
     // Custom output for missing arguments or other command errors
     writeErr: (str) => {
@@ -48,7 +45,45 @@ function createServiceCommand(service: ServiceType) {
       .description(`Install a ${service} from GitHub`)
       .action(async (name) => {
         try {
-          await handler.install(name);
+          const opts = program.opts();
+          let scopes: ("global" | "local")[] = [];
+
+          if (opts.global) scopes.push("global");
+          if (opts.local) scopes.push("local");
+
+          // Interactive cherry-pick if no scope specified
+          if (scopes.length === 0) {
+            const selected = await p.multiselect({
+              message: `Where do you want to install ${chalk.bold(name)}?`,
+              options: [
+                { value: "local", label: "Local project (.opencode/)", hint: "Recommended" },
+                { value: "global", label: "Global (~/.config/opencode/)", hint: "Available everywhere" },
+              ],
+              required: true,
+            });
+
+            if (p.isCancel(selected)) {
+              p.cancel("Installation cancelled.");
+              process.exit(0);
+            }
+            scopes = selected as ("global" | "local")[];
+          }
+
+          // Warning if both are selected
+          if (scopes.includes("global") && scopes.includes("local")) {
+            console.log(chalk.yellow(`\n⚠️  Warning: Installing to both global and local is usually unnecessary.`));
+            console.log(chalk.gray(`Better to choose one to avoid version conflicts.\n`));
+          }
+
+          // Execute for each scope
+          for (const scope of scopes) {
+            console.log(chalk.gray(`Scope: ${chalk.bold(scope)}`));
+            const paths = getPathsForScope(scope);
+            if (handler instanceof GenericService) {
+              handler.setPaths(paths);
+            }
+            await handler.install(name);
+          }
         } catch (error: any) {
           console.error(chalk.red(`Error: ${error.message}`));
           process.exit(1);

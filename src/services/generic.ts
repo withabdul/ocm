@@ -3,19 +3,43 @@ import { downloadFromGitHub } from "../utils/github";
 import fs from "node:fs/promises";
 import path from "node:path";
 import chalk from "chalk";
+import registryData from "../registry.json";
+
+const registry = registryData as Record<string, Record<string, { repo: string; path: string }>>;
 
 export class GenericService {
-  constructor(private type: ServiceType) {}
+  private currentPaths: typeof PATHS;
+
+  constructor(private type: ServiceType) {
+    this.currentPaths = PATHS;
+  }
+
+  /**
+   * Update the paths used by this service (for multi-scope support)
+   */
+  setPaths(newPaths: typeof PATHS) {
+    this.currentPaths = newPaths;
+  }
 
   private getTargetDir(name: string): string {
-    return path.join(PATHS[this.type], name);
+    return path.join(this.currentPaths[this.type], name);
   }
 
   async install(name: string) {
     console.log(chalk.blue(`Installing ${this.type}: `) + chalk.bold(name) + "...");
     
-    const [owner, repo] = GITHUB_REPO.split("/");
-    const remotePath = `assets/${this.type}/${name}`;
+    let repoSource = GITHUB_REPO;
+    let remotePath = `assets/${this.type}/${name}`;
+
+    // Check registry for override
+    const serviceRegistry = registry[this.type];
+    if (serviceRegistry && serviceRegistry[name]) {
+      repoSource = serviceRegistry[name].repo;
+      remotePath = serviceRegistry[name].path;
+      console.log(chalk.gray(`  Using registry source: ${repoSource}:${remotePath}`));
+    }
+
+    const [owner, repo] = repoSource.split("/");
     const localDir = this.getTargetDir(name);
 
     try {
@@ -27,9 +51,10 @@ export class GenericService {
   }
 
   async list() {
-    const baseDir = PATHS[this.type];
+    const baseDir = this.currentPaths[this.type];
     try {
       const items = (await fs.readdir(baseDir)).filter(i => i !== ".gitkeep");
+
       
       if (items.length === 0) {
         console.log(chalk.yellow(`No ${this.type} installed.`));

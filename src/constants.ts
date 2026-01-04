@@ -7,25 +7,34 @@ import os from "node:os";
  */
 
 const isProd = process.env.OCM_ENV === "production";
-const isGlobal = process.env.OCM_GLOBAL === "true";
 
-// Helper to get base directory
-function getBaseDir() {
-  if (!isProd) return path.join(process.cwd(), "tests", ".opencode");
-  if (isGlobal) return path.join(os.homedir(), ".config", "opencode");
-  return path.join(process.cwd(), ".opencode");
+// Get paths based on scope
+export function getPathsForScope(scope: "global" | "local") {
+  const isGlobal = scope === "global";
+  
+  let base: string;
+  if (!isProd) {
+    base = path.join(process.cwd(), "tests", ".opencode");
+  } else if (isGlobal) {
+    base = path.join(os.homedir(), ".config", "opencode");
+  } else {
+    base = path.join(process.cwd(), ".opencode");
+  }
+
+  return {
+    base,
+    config: path.join(base, "opencode.json"),
+    skill: path.join(base, "skill"),
+    agents: path.join(base, "agents"),
+    command: path.join(base, "command"),
+    mcp: path.join(base, "mcp"),
+  };
 }
 
-export const BASE_DIR = getBaseDir();
-
-export const PATHS = {
-  base: BASE_DIR,
-  config: path.join(BASE_DIR, "opencode.json"),
-  skill: path.join(BASE_DIR, "skill"),
-  agents: path.join(BASE_DIR, "agents"),
-  command: path.join(BASE_DIR, "command"),
-  mcp: path.join(BASE_DIR, "mcp"),
-};
+// Default export PATHS using current env for backward compatibility
+const currentScope = process.env.OCM_GLOBAL === "true" ? "global" : "local";
+export const PATHS = getPathsForScope(currentScope);
+export const BASE_DIR = PATHS.base;
 
 export const CONFIG_SCHEMA = "https://opencode.ai/config.json";
 
