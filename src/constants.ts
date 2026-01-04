@@ -7,7 +7,7 @@ import fs from "node:fs";
  * Handles path resolution for different environments.
  */
 
-function detectIsProd() {
+function detectIsProd(): boolean {
   // If explicitly set via ENV, respect it
   if (process.env.OCM_ENV === "production") return true;
   if (process.env.OCM_ENV === "development") return false;
@@ -22,15 +22,15 @@ function detectIsProd() {
   return !isDev;
 }
 
-const isProd = detectIsProd();
+// Cache the result at module load - no need to recompute
+const IS_PROD = detectIsProd();
 
 // Get paths based on scope
 export function getPathsForScope(scope: "global" | "local") {
   const isGlobal = scope === "global";
-  const isProd = detectIsProd();
   
   let base: string;
-  if (isProd) {
+  if (IS_PROD) {
     base = isGlobal 
       ? path.join(os.homedir(), ".config", "opencode")
       : path.join(process.cwd(), ".opencode");

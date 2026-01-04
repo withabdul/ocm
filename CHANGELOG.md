@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 2026-01-05
+
+### Added
+- Input validation for asset names to prevent path traversal attacks and invalid characters.
+- GitHub API rate limit detection with helpful error messages and reset time info.
+- Support for `GITHUB_TOKEN` environment variable for higher API rate limits (5000 req/hour).
+- Parallel file downloads with concurrency limit (5 max) for faster asset installation.
+- Automatic cleanup of partial downloads when installation fails.
+- New `src/utils/validation.ts` module with pure validation functions.
+- Test script now runs build before tests (`bun run test`).
+
+### Changed
+- Optimized `detectIsProd()` to cache result at module load instead of recalculating on every call.
+- Pinned `@types/bun` to specific version (`^1.3.5`) for reproducible builds.
+
+### Fixed
+- Removed duplicate `detectIsProd()` call in `getPathsForScope()` function.
+
 ## [1.0.2] - 2026-01-05
 
 ### Added

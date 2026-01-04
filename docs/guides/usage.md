@@ -7,7 +7,7 @@ Welcome to the **OpenCode Manager (ocm)** guide. This document explains how to g
 `ocm` is built with Bun. To install it globally:
 
 ```bash
-bun install -g withabdul/ocm
+bun add -g @withabdul/ocm
 ```
 
 ## Scopes: Global vs Local

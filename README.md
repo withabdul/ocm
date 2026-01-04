@@ -13,7 +13,7 @@ Built for speed and flexibility, `ocm` supports both local project-based assets 
 Install globally using [Bun](https://bun.sh):
 
 ```bash
-bun install -g withabdul/ocm
+bun add -g @withabdul/ocm
 ```
 
 ### Basic Usage

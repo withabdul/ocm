@@ -1,6 +1,6 @@
 {
   "name": "@withabdul/ocm",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "keywords": [
     "opencode",
@@ -26,10 +26,11 @@
     "assets"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --compile --outfile ocm"
+    "build": "bun build ./src/index.ts --compile --outfile ocm",
+    "test": "bun run build && bun test"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.3.5"
   },
   "peerDependencies": {
     "typescript": "^5"

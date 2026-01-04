@@ -1,5 +1,6 @@
 import { ServiceType, PATHS, GITHUB_REPO } from "../constants";
 import { downloadFromGitHub } from "../utils/github";
+import { validateAssetName } from "../utils/validation";
 import fs from "node:fs/promises";
 import path from "node:path";
 import chalk from "chalk";
@@ -27,6 +28,7 @@ export class GenericService {
   }
 
   async exists(name: string): Promise<boolean> {
+    validateAssetName(name);
     const dir = this.getTargetDir(name);
     try {
       await fs.access(dir);
@@ -37,6 +39,8 @@ export class GenericService {
   }
 
   async install(name: string) {
+    // Validate name at boundary to prevent path traversal and invalid characters
+    validateAssetName(name);
 
     console.log(chalk.blue(`Installing ${this.type}: `) + chalk.bold(name) + "...");
     
@@ -92,8 +96,9 @@ export class GenericService {
 
   async remove(names: string[]) {
     for (const name of names) {
-      const dir = this.getTargetDir(name);
       try {
+        validateAssetName(name);
+        const dir = this.getTargetDir(name);
         await fs.rm(dir, { recursive: true, force: true });
         console.log(chalk.green(`✅ Removed ${this.type}: `) + chalk.bold(name));
       } catch (error: any) {
