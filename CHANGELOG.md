@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2026-01-05
+
+### Added
+- Nested agent structure support (e.g., `agent/core/*.md`).
+- Validation tests for agent assets.
+
+### Changed
+- Renamed `agents` service to `agent` (singular) for consistency.
+
 ## [1.0.1] - 2026-01-05
 
 ### Added
