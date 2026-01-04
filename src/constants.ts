@@ -6,8 +6,29 @@ import os from "node:os";
  * Handles path resolution for different environments.
  */
 
-// Default to production unless explicitly in our dev folder
-const isProd = process.env.OCM_ENV === "production" || !process.cwd().toLowerCase().includes("programming\\pribadi\\ocm");
+// Automatic Production Detection:
+// We consider it "Local Dev" ONLY if:
+// 1. We are inside a directory named "ocm" AND
+// 2. There is a "src" folder and "package.json" in the current working directory
+// Otherwise, it's production (user is running the tool).
+import fs from "node:fs";
+
+function detectIsProd() {
+  // If explicitly set via ENV, respect it
+  if (process.env.OCM_ENV === "production") return true;
+  if (process.env.OCM_ENV === "development") return false;
+
+  const cwd = process.cwd();
+  const isOcmFolder = path.basename(cwd).toLowerCase() === "ocm";
+  const hasSrc = fs.existsSync(path.join(cwd, "src"));
+  const hasPackageJson = fs.existsSync(path.join(cwd, "package.json"));
+
+  // If it looks like the dev repo, it's NOT production
+  return !(isOcmFolder && hasSrc && hasPackageJson);
+}
+
+const isProd = detectIsProd();
+
 
 // Get paths based on scope
 export function getPathsForScope(scope: "global" | "local") {
