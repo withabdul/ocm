@@ -169,18 +169,32 @@ function createServiceCommand(service: ServiceType) {
         // Default behavior: Check Local, if empty/not found, check Global
         const localPaths = getPathsForScope("local");
         if (handler instanceof GenericService) handler.setPaths(localPaths);
-        const localItems = await handler.getInstalledItems();
+        
+        let localHasItems = false;
+        if (service === "mcp" && handler instanceof McpService) {
+          localHasItems = await handler.hasMcpConfig();
+        } else if (handler instanceof GenericService) {
+          const items = await handler.getInstalledItems();
+          localHasItems = items.length > 0;
+        }
 
-        if (localItems.length > 0) {
+        if (localHasItems) {
           console.log(chalk.gray(`Scope: ${chalk.bold("local")}`));
           await handler.list();
         } else {
           // Fallback to Global
           const globalPaths = getPathsForScope("global");
           if (handler instanceof GenericService) handler.setPaths(globalPaths);
-          const globalItems = await handler.getInstalledItems();
           
-          if (globalItems.length > 0) {
+          let globalHasItems = false;
+          if (service === "mcp" && handler instanceof McpService) {
+            globalHasItems = await handler.hasMcpConfig();
+          } else if (handler instanceof GenericService) {
+            const items = await handler.getInstalledItems();
+            globalHasItems = items.length > 0;
+          }
+          
+          if (globalHasItems) {
             console.log(chalk.gray(`Scope: ${chalk.bold("global")} (fallback)`));
             await handler.list();
           } else {
@@ -243,6 +257,14 @@ function createServiceCommand(service: ServiceType) {
       .description(`Enable an ${service} asset`)
       .action(async (name) => {
         try {
+          const opts = program.opts();
+          const scope = opts.global ? "global" : "local";
+          const paths = getPathsForScope(scope);
+
+          if (handler instanceof GenericService) {
+            handler.setPaths(paths);
+          }
+
           if (service === "mcp") {
             await (handler as McpService).toggle(name, true);
           } else {
@@ -259,6 +281,14 @@ function createServiceCommand(service: ServiceType) {
       .description(`Disable an ${service} asset`)
       .action(async (name) => {
         try {
+          const opts = program.opts();
+          const scope = opts.global ? "global" : "local";
+          const paths = getPathsForScope(scope);
+
+          if (handler instanceof GenericService) {
+            handler.setPaths(paths);
+          }
+
           if (service === "mcp") {
             await (handler as McpService).toggle(name, false);
           } else {
@@ -269,6 +299,7 @@ function createServiceCommand(service: ServiceType) {
           process.exit(1);
         }
       });
+
 
   return serviceCmd;
 }

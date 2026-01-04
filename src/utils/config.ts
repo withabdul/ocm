@@ -11,9 +11,9 @@ export interface OpenCodeConfig {
  * Reads the opencode.json config file.
  * Returns a default config if the file doesn't exist.
  */
-export async function readConfig(): Promise<OpenCodeConfig> {
+export async function readConfig(configPath: string = PATHS.config): Promise<OpenCodeConfig> {
   try {
-    const content = await fs.readFile(PATHS.config, "utf-8");
+    const content = await fs.readFile(configPath, "utf-8");
     return JSON.parse(content);
   } catch (error) {
     return {
@@ -26,7 +26,7 @@ export async function readConfig(): Promise<OpenCodeConfig> {
 /**
  * Writes the config to opencode.json, ensuring $schema is the first key.
  */
-export async function writeConfig(config: OpenCodeConfig): Promise<void> {
+export async function writeConfig(config: OpenCodeConfig, configPath: string = PATHS.config): Promise<void> {
   // Ensure $schema is at the top by spreading it first
   const { $schema, ...rest } = config;
   
@@ -36,7 +36,7 @@ export async function writeConfig(config: OpenCodeConfig): Promise<void> {
   };
 
   await fs.writeFile(
-    PATHS.config,
+    configPath,
     JSON.stringify(orderedConfig, null, 2),
     "utf-8"
   );
@@ -45,8 +45,8 @@ export async function writeConfig(config: OpenCodeConfig): Promise<void> {
 /**
  * Updates a specific MCP server entry in the config.
  */
-export async function updateMcpConfig(name: string, mcpData: any | null): Promise<void> {
-  const config = await readConfig();
+export async function updateMcpConfig(name: string, mcpData: any | null, configPath: string = PATHS.config): Promise<void> {
+  const config = await readConfig(configPath);
   
   if (!config.mcp) config.mcp = {};
   
@@ -56,5 +56,5 @@ export async function updateMcpConfig(name: string, mcpData: any | null): Promis
     config.mcp[name] = mcpData;
   }
   
-  await writeConfig(config);
+  await writeConfig(config, configPath);
 }
