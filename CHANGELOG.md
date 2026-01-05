@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2026-01-05
+
+### Added
+- **`ocm mcp add`**: Interactive command to add MCP server configurations.
+  - Supports both **Local** (executable) and **Remote** (HTTP/SSE) server types.
+  - Local config: command array, environment variables, timeout.
+  - Remote config: URL, headers, OAuth (automatic/disabled/custom).
+  - Validates server name and checks for existing configurations.
+  - Saves directly to `opencode.json` following OpenCode MCP specification.
+
 ## [1.0.4] - 2026-01-05
 
 ### Added

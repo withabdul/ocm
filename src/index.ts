@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name("ocm")
   .description(chalk.cyan("OpenCode Manager (ocm) - Standalone orchestrator for OpenCode"))
-  .version("1.0.0")
+  .version("1.0.5")
   .option("-g, --global", "Manage global assets in ~/.config/opencode")
   .option("-l, --local", "Manage local assets in .opencode (default)")
   .configureOutput({
@@ -45,6 +45,29 @@ function createServiceCommand(service: ServiceType) {
   serviceCmd.action(() => {
     serviceCmd.outputHelp();
   });
+
+  // MCP-specific: add command for interactive MCP server configuration
+  if (service === "mcp") {
+    serviceCmd
+      .command("add")
+      .description("Add a new MCP server configuration interactively")
+      .action(async () => {
+        try {
+          const opts = program.opts();
+          const scope = opts.global ? "global" : "local";
+          const paths = getPathsForScope(scope);
+
+          if (handler instanceof McpService) {
+            handler.setPaths(paths);
+            console.log(chalk.gray(`Scope: ${chalk.bold(scope)}`));
+            await handler.add();
+          }
+        } catch (error: any) {
+          console.error(chalk.red(`Error: ${error.message}`));
+          process.exit(1);
+        }
+      });
+  }
 
   if (service !== "mcp") {
     serviceCmd
